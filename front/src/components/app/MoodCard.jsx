@@ -46,16 +46,25 @@ export function MoodCard({
         {step === "input" && (
           <form className="space-y-5" onSubmit={onSubmit}>
             <div className="space-y-2.5">
+              <label htmlFor="mood" className="text-sm font-medium">
+                Describe your mood
+              </label>
               <Textarea
                 id="mood"
                 value={mood}
                 onChange={(event) => onMoodChange(event.target.value)}
                 placeholder="Example: I feel calm, creative and a little nostalgic."
                 rows={6}
+                aria-invalid={Boolean(error)}
+                aria-describedby={error ? "mood-error" : undefined}
               />
             </div>
 
-            {error && <p className="error">{error}</p>}
+            {error && (
+              <p id="mood-error" className="error" role="alert" aria-live="assertive">
+                {error}
+              </p>
+            )}
 
             <Button type="submit" className="w-full gap-2 sm:w-auto" size="lg">
               <Sparkles className="h-4 w-4" />
@@ -65,7 +74,11 @@ export function MoodCard({
         )}
 
         {step === "loading" && (
-          <section className="flex min-h-[320px] flex-col items-center justify-center gap-3 text-center">
+          <section
+            className="flex min-h-[320px] flex-col items-center justify-center gap-3 text-center"
+            role="status"
+            aria-live="polite"
+          >
             <Badge variant="secondary">Loading</Badge>
             <h2 className="text-xl font-semibold">Preparing your music vibe...</h2>
             <p className="max-w-md text-sm text-muted-foreground">
