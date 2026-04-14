@@ -1,18 +1,34 @@
-# Music Moods
+# 🎧 Music Moods
 
-An app that reads a user's mood and returns a friendly response with Spotify playlist suggestions.
+A web app that reads the user's mood and responds with a friendly message plus Spotify playlist suggestions.
 
-## Project Structure
+---
 
-```text
+## ✨ Preview
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/7b3fa7c7-3dfc-4b87-8b26-4bb2899ca031" width="80%" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/278a65a7-5c57-4fc7-bd4f-5c02723bbc55" width="80%" />
+</p>
+
+---
+
+## 🏗️ Project Structure
+
+```bash
 music/
-  back/   -> API (Node + Express + TypeScript)
-  front/  -> Web app (React + Vite + Tailwind + TypeScript)
+├── back/   # API (Node + Express + TypeScript)
+└── front/  # Web App (React + Vite + Tailwind + TypeScript)
 ```
 
-## Run Locally
+---
 
-### 1) Backend
+## 🚀 Running Locally
+
+### 🔙 Backend
 
 ```bash
 cd back
@@ -21,11 +37,12 @@ cp .env.example .env
 npm run dev
 ```
 
-Backend default URL: `http://localhost:3001`
+- Default URL: `http://localhost:3001`
+- Build output: `back/dist`
 
-Build output: `back/dist`
+---
 
-### 2) Frontend
+### 🎨 Frontend
 
 ```bash
 cd front
@@ -34,55 +51,106 @@ cp .env.example .env
 npm run dev
 ```
 
-Frontend default URL: `http://localhost:5173`
+- Default URL: `http://localhost:5173`
 
-## TypeScript Setup
+---
+
+## ⚙️ TypeScript Setup
 
 ### Backend
 
-- source code: `back/src/**/*.ts`
-- compile command: `npm run build`
-- output folder: `back/dist`
-- run compiled API: `npm run start`
+- Source: `back/src/**/*.ts`
+
+```bash
+npm run build
+npm run start
+```
+
+---
 
 ### Frontend
 
-- source code: `front/src/**/*.ts` and `front/src/**/*.tsx`
-- static typecheck: `npm run typecheck`
-- production build: `npm run build`
+- Source: `front/src/**/*.ts` and `*.tsx`
 
-## Environment Variables
+```bash
+npm run typecheck
+npm run build
+```
 
-### Frontend (`front/.env`)
+---
 
-Based on `front/.env.example`:
+## 🔐 Environment Variables
 
-- `VITE_API_URL` - backend base URL used by the UI.  
-  Example: `http://localhost:3001`
+### 🖥️ Frontend (`front/.env`)
 
-### Backend (`back/.env`)
+```env
+VITE_API_URL=http://localhost:3001
+```
 
-Based on `back/.env.example`:
+---
 
-- `PORT` - API port (default `3001`)
-- `FRONTEND_ORIGIN` - allowed CORS origin(s), comma-separated when needed
-- `JSON_BODY_LIMIT` - JSON payload limit (default `10kb`)
-- `MOOD_MAX_LENGTH` - max allowed mood length (default `280`)
-- `MOOD_RATE_LIMIT_WINDOW_MS` - rate-limit window duration in ms
-- `MOOD_RATE_LIMIT_MAX` - max requests per window for `POST /api/mood`
-- `LOG_FORMAT` - `morgan` format string (default `dev`)
-- `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` - Spotify API credentials
+### 🔙 Backend (`back/.env`)
 
-## API Endpoints
+```env
+PORT=3001
+FRONTEND_ORIGIN=http://localhost:5173
+JSON_BODY_LIMIT=10kb
+MOOD_MAX_LENGTH=280
+MOOD_RATE_LIMIT_WINDOW_MS=60000
+MOOD_RATE_LIMIT_MAX=100
+LOG_FORMAT=dev
 
-- `GET /health` - health check
-- `POST /api/mood` - receives `{ "mood": "..." }` and returns:
-  - `mood`
-  - `friendlyMessage`
-  - `playlists` (`name`, `url`, `reason`, `thumbnailUrl`)
-  - `source` (`spotify` or `fallback`)
+SPOTIFY_CLIENT_ID=your_client_id
+SPOTIFY_CLIENT_SECRET=your_client_secret
+```
 
-## Tests
+---
+
+## 🔌 API Endpoints
+
+### Health Check
+
+```http
+GET /health
+```
+
+---
+
+### Mood Analysis
+
+```http
+POST /api/mood
+```
+
+**Request Body**
+
+```json
+{
+  "mood": "I'm feeling happy today!"
+}
+```
+
+**Response**
+
+```json
+{
+  "mood": "...",
+  "friendlyMessage": "...",
+  "playlists": [
+    {
+      "name": "...",
+      "url": "...",
+      "reason": "...",
+      "thumbnailUrl": "..."
+    }
+  ],
+  "source": "spotify | fallback"
+}
+```
+
+---
+
+## 🧪 Tests
 
 ### Backend
 
@@ -98,21 +166,11 @@ cd front
 npm test
 ```
 
-## Code Quality
+---
 
-Run from each package:
+## 🧹 Code Quality
 
-### Backend (`back/`)
-
-```bash
-npm run typecheck
-npm run lint
-npm run lint:fix
-npm run format
-npm run format:check
-```
-
-### Frontend (`front/`)
+Run in each package:
 
 ```bash
 npm run typecheck
@@ -122,22 +180,68 @@ npm run format
 npm run format:check
 ```
 
-## Deployment Strategy
+---
 
-Simple and low-maintenance option:
+## ☁️ Deployment
 
-- Deploy `front/` to **Vercel**
-- Deploy `back/` to **Render**, **Fly.io**, or **Railway**
+### Simple Strategy
 
-Recommended production setup:
+- Frontend → Vercel
+- Backend → Render / Fly.io / Railway
 
-1. Deploy backend and copy its public URL
-2. Set `VITE_API_URL` on frontend to backend URL
-3. Deploy frontend and copy its public URL
-4. Set backend `FRONTEND_ORIGIN` to the frontend domain (real production domain)
-5. Redeploy backend so CORS only accepts your frontend origin
+---
 
-Example:
+### 🔄 Steps
+
+1. Deploy the backend  
+2. Copy the public backend URL  
+3. Set it in the frontend:
+
+```env
+VITE_API_URL=https://your-backend.com
+```
+
+4. Deploy the frontend  
+5. Set the frontend URL in the backend:
+
+```env
+FRONTEND_ORIGIN=https://your-frontend.com
+```
+
+6. Redeploy the backend  
+
+---
+
+### 🌍 Example
 
 - Frontend: `https://music-moods.vercel.app`
-- Backend env: `FRONTEND_ORIGIN=https://music-moods.vercel.app`
+
+```env
+FRONTEND_ORIGIN=https://music-moods.vercel.app
+```
+
+---
+
+## 💡 About the Project
+
+Music Moods transforms feelings into music — creating a simple, empathetic, and personalized experience 🎶
+
+---
+
+## 📌 Tech Stack
+
+- Backend: Node.js, Express, TypeScript
+- Frontend: React, Vite, Tailwind CSS, TypeScript
+- API: Spotify Web API
+
+---
+
+## 🤝 Contributing
+
+Feel free to open issues or submit pull requests!
+
+---
+
+## 📄 License
+
+This project is open-source and available under the MIT License.
