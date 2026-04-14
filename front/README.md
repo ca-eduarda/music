@@ -5,6 +5,11 @@ Main flow implemented:
 - loading state while calling backend
 - screen 2: playlist grid with thumbnails
 
+UI stack:
+- Tailwind CSS
+- shadcn-style tokens and component structure
+- reusable UI components in `src/components/ui`
+
 ## Run locally
 
 1. Start backend in another terminal:
