@@ -19,6 +19,10 @@ export async function fetchMoodRecommendation(mood) {
       throw new Error(payload?.error || "Something went wrong.");
     }
 
+    if (!payload || typeof payload !== "object") {
+      throw new Error("Received an invalid response from backend.");
+    }
+
     return payload;
   } catch (error) {
     if (error instanceof TypeError) {

@@ -8,6 +8,10 @@ const {
   getRecommendationByMoodWithSpotify
 } = require("./services/spotifyMoodService");
 
+function normalizeOrigin(origin) {
+  return String(origin || "").trim().replace(/\/+$/, "");
+}
+
 function createApp(options = {}) {
   const app = express();
   const DEFAULT_FRONTEND_ORIGIN = "http://localhost:5173";
@@ -32,7 +36,7 @@ function createApp(options = {}) {
 
   const allowedOrigins = config.frontendOrigin
     .split(",")
-    .map((origin) => origin.trim())
+    .map((origin) => normalizeOrigin(origin))
     .filter(Boolean);
 
   const moodLimiter = rateLimit({
@@ -48,7 +52,7 @@ function createApp(options = {}) {
   app.use(
     cors({
       origin(origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(normalizeOrigin(origin))) {
           return callback(null, true);
         }
 
@@ -91,16 +95,25 @@ function createApp(options = {}) {
       });
     }
 
-    const recommendation = await recommendationService(normalizedMood);
-    return res.status(200).json(recommendation);
+    try {
+      const recommendation = await recommendationService(normalizedMood);
+      return res.status(200).json(recommendation);
+    } catch (_error) {
+      return res.status(500).json({
+        error: "Could not generate a recommendation right now. Please try again."
+      });
+    }
   });
 
   app.use((error, _req, res, next) => {
     if (error.message === "Origin not allowed by CORS policy.") {
       return res.status(403).json({ error: error.message });
     }
-
     return next(error);
+  });
+
+  app.use((_error, _req, res, _next) => {
+    return res.status(500).json({ error: "Internal server error." });
   });
 
   return app;

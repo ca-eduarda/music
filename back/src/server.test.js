@@ -83,3 +83,32 @@ test("POST /api/mood returns 429 when rate limit is exceeded", async () => {
     "Too many requests. Please wait a moment and try again."
   );
 });
+
+test("POST /api/mood returns 500 when recommendation service fails", async () => {
+  const app = createApp({
+    getRecommendationByMoodWithSpotify: async () => {
+      throw new Error("Unexpected service failure");
+    }
+  });
+
+  const response = await request(app).post("/api/mood").send({ mood: "happy" });
+
+  assert.equal(response.status, 500);
+  assert.equal(
+    response.body.error,
+    "Could not generate a recommendation right now. Please try again."
+  );
+});
+
+test("CORS allows FRONTEND_ORIGIN configured with trailing slash", async () => {
+  const app = createApp({
+    frontendOrigin: "https://music-moods.vercel.app/"
+  });
+
+  const response = await request(app)
+    .post("/api/mood")
+    .set("Origin", "https://music-moods.vercel.app")
+    .send({ mood: "happy" });
+
+  assert.notEqual(response.status, 403);
+});

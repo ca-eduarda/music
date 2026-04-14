@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom/vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App";
 import { fetchMoodRecommendation } from "@/services/moodApi";
@@ -25,6 +25,10 @@ function createDeferred() {
 describe("App mood form flow", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it("goes from input to loading to result", async () => {
@@ -84,6 +88,29 @@ describe("App mood form flow", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Backend unavailable")).toBeInTheDocument();
+    });
+  });
+
+  it("shows error when backend returns invalid payload", async () => {
+    fetchMoodRecommendation.mockRejectedValueOnce(
+      new Error("Received an invalid response from backend.")
+    );
+
+    render(<App />);
+    const user = userEvent.setup();
+
+    await user.type(
+      screen.getByPlaceholderText(
+        "Example: I feel calm, creative and a little nostalgic."
+      ),
+      "happy"
+    );
+    await user.click(screen.getByRole("button", { name: "Generate playlists" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Received an invalid response from backend.")
+      ).toBeInTheDocument();
     });
   });
 });
