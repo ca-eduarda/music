@@ -1,23 +1,35 @@
-require("dotenv").config();
+import "dotenv/config";
 
-const express = require("express");
-const cors = require("cors");
-const rateLimit = require("express-rate-limit");
-const morgan = require("morgan");
-const {
-  getRecommendationByMoodWithSpotify
-} = require("./services/spotifyMoodService");
+import cors from "cors";
+import express, {
+  type NextFunction,
+  type Request,
+  type Response
+} from "express";
+import morgan from "morgan";
+import rateLimit from "express-rate-limit";
 
-function normalizeOrigin(origin) {
+import { getRecommendationByMoodWithSpotify } from "./services/spotifyMoodService";
+import type { MoodRecommendation } from "./services/moodService";
+
+function normalizeOrigin(origin: string | null | undefined) {
   return String(origin || "").trim().replace(/\/+$/, "");
 }
 
-function createApp(options = {}) {
+interface AppOptions {
+  frontendOrigin?: string;
+  maxMoodLength?: number;
+  rateLimitWindowMs?: number;
+  rateLimitMax?: number;
+  jsonBodyLimit?: string;
+  getRecommendationByMoodWithSpotify?: (mood: string) => Promise<MoodRecommendation>;
+}
+
+export function createApp(options: AppOptions = {}) {
   const app = express();
   const DEFAULT_FRONTEND_ORIGIN = "http://localhost:5173";
   const isProduction = process.env.NODE_ENV === "production";
-  const configuredFrontendOrigin =
-    options.frontendOrigin || process.env.FRONTEND_ORIGIN;
+  const configuredFrontendOrigin = options.frontendOrigin || process.env.FRONTEND_ORIGIN;
   if (isProduction && !configuredFrontendOrigin) {
     throw new Error("FRONTEND_ORIGIN must be set in production.");
   }
@@ -69,11 +81,11 @@ function createApp(options = {}) {
   );
   app.use(express.json({ limit: config.jsonBodyLimit }));
 
-  app.get("/health", (_req, res) => {
+  app.get("/health", (_req: Request, res: Response) => {
     res.json({ status: "ok", service: "music-backend" });
   });
 
-  app.post("/api/mood", moodLimiter, async (req, res) => {
+  app.post("/api/mood", moodLimiter, async (req: Request, res: Response) => {
     const { mood } = req.body || {};
 
     if (!mood || typeof mood !== "string") {
@@ -105,14 +117,15 @@ function createApp(options = {}) {
     }
   });
 
-  app.use((error, _req, res, next) => {
+  app.use((error: Error, _req: Request, res: Response, next: NextFunction) => {
     if (error.message === "Origin not allowed by CORS policy.") {
       return res.status(403).json({ error: error.message });
     }
+
     return next(error);
   });
 
-  app.use((_error, _req, res, _next) => {
+  app.use((_error: Error, _req: Request, res: Response, _next: NextFunction) => {
     return res.status(500).json({ error: "Internal server error." });
   });
 
@@ -126,7 +139,3 @@ if (require.main === module) {
     console.log(`Backend running on http://localhost:${PORT}`);
   });
 }
-
-module.exports = {
-  createApp
-};

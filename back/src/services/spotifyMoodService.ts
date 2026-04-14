@@ -1,6 +1,17 @@
-const { detectMoodIntent, getFallbackRecommendation } = require("./moodService");
+import {
+  detectMoodIntent,
+  getFallbackRecommendation,
+  type MoodIntent,
+  type MoodRecommendation,
+  type PlaylistItem
+} from "./moodService";
 
-let tokenCache = {
+interface TokenCache {
+  accessToken: string | null;
+  expiresAt: number;
+}
+
+let tokenCache: TokenCache = {
   accessToken: null,
   expiresAt: 0
 };
@@ -46,18 +57,26 @@ async function getSpotifyAccessToken() {
     throw new Error("Failed to get Spotify access token.");
   }
 
-  const tokenPayload = await tokenResponse.json();
+  const tokenPayload = (await tokenResponse.json()) as {
+    access_token: string;
+    expires_in: number;
+  };
   tokenCache = {
     accessToken: tokenPayload.access_token,
     expiresAt: Date.now() + tokenPayload.expires_in * 1000 - 60_000
   };
 
+  if (!tokenCache.accessToken) {
+    throw new Error("Failed to cache Spotify access token.");
+  }
+
   return tokenCache.accessToken;
 }
 
-async function searchSpotifyPlaylists(query, accessToken) {
+async function searchSpotifyPlaylists(query: string, accessToken: string) {
   const offset = Math.floor(Math.random() * 30);
-  const market = SPOTIFY_MARKETS[Math.floor(Math.random() * SPOTIFY_MARKETS.length)];
+  const market =
+    SPOTIFY_MARKETS[Math.floor(Math.random() * SPOTIFY_MARKETS.length)];
 
   const params = new URLSearchParams({
     q: query,
@@ -80,11 +99,13 @@ async function searchSpotifyPlaylists(query, accessToken) {
     throw new Error(`Spotify search failed for query: ${query}`);
   }
 
-  const payload = await response.json();
+  const payload = (await response.json()) as {
+    playlists?: { items?: SpotifyPlaylist[] };
+  };
   return payload?.playlists?.items || [];
 }
 
-function sanitizeText(text) {
+function sanitizeText(text: string) {
   return String(text || "")
     .toLowerCase()
     .replace(/[^\w\s]/g, " ")
@@ -92,7 +113,7 @@ function sanitizeText(text) {
     .trim();
 }
 
-function extractMoodKeywords(moodText) {
+function extractMoodKeywords(moodText: string) {
   const stopWords = new Set([
     "the",
     "and",
@@ -128,7 +149,11 @@ function pickRandomDecorator() {
   return SEARCH_DECORATORS[Math.floor(Math.random() * SEARCH_DECORATORS.length)];
 }
 
-function buildDynamicQueries(intent, fallbackRecommendation, moodText) {
+function buildDynamicQueries(
+  intent: MoodIntent | null,
+  fallbackRecommendation: MoodRecommendation,
+  moodText: string
+) {
   const baseTerms =
     intent?.searchTerms ||
     fallbackRecommendation.playlists.map((item) =>
@@ -136,7 +161,7 @@ function buildDynamicQueries(intent, fallbackRecommendation, moodText) {
     );
   const moodKeywords = extractMoodKeywords(moodText);
 
-  const querySet = new Set();
+  const querySet = new Set<string>();
   baseTerms.forEach((term) => {
     querySet.add(term);
     if (moodKeywords.length) {
@@ -153,7 +178,17 @@ function buildDynamicQueries(intent, fallbackRecommendation, moodText) {
   return Array.from(querySet).slice(0, 8);
 }
 
-function mapPlaylist(playlist, reason) {
+interface SpotifyPlaylist {
+  name?: string;
+  external_urls?: {
+    spotify?: string;
+  };
+  images?: Array<{
+    url?: string;
+  }>;
+}
+
+function mapPlaylist(playlist: SpotifyPlaylist, reason: string): PlaylistItem {
   return {
     name: playlist?.name || "Spotify Playlist",
     url: playlist?.external_urls?.spotify || "",
@@ -162,9 +197,9 @@ function mapPlaylist(playlist, reason) {
   };
 }
 
-function dedupePlaylists(playlists, maxItems) {
+function dedupePlaylists(playlists: PlaylistItem[], maxItems: number) {
   const seen = new Set();
-  const result = [];
+  const result: PlaylistItem[] = [];
 
   for (const item of playlists) {
     if (!item.url || seen.has(item.url)) {
@@ -180,7 +215,9 @@ function dedupePlaylists(playlists, maxItems) {
   return result;
 }
 
-async function getRecommendationByMoodWithSpotify(moodText) {
+export async function getRecommendationByMoodWithSpotify(
+  moodText: string
+): Promise<MoodRecommendation> {
   const fallbackRecommendation = getFallbackRecommendation(moodText);
 
   if (!hasSpotifyCredentials()) {
@@ -222,7 +259,3 @@ async function getRecommendationByMoodWithSpotify(moodText) {
     return fallbackRecommendation;
   }
 }
-
-module.exports = {
-  getRecommendationByMoodWithSpotify
-};

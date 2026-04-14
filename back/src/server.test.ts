@@ -1,8 +1,9 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const request = require("supertest");
+import test from "node:test";
+import assert from "node:assert/strict";
 
-const { createApp } = require("./server");
+import request from "supertest";
+
+import { createApp } from "./server";
 
 test("GET /health returns service status", async () => {
   const app = createApp();
@@ -17,7 +18,7 @@ test("GET /health returns service status", async () => {
 });
 
 test("POST /api/mood returns recommendation on success", async () => {
-  const captured = [];
+  const captured: string[] = [];
   const mockRecommendation = {
     mood: "calm",
     friendlyMessage: "Here are playlists for your mood.",

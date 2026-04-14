@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fetchMoodRecommendation } from "./moodApi";
 
 describe("fetchMoodRecommendation", () => {
-  const originalFetch = global.fetch;
+  const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -12,19 +12,17 @@ describe("fetchMoodRecommendation", () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
   });
 
   it("fails with timeout message when request hangs", async () => {
-    global.fetch = vi.fn((_url, options) => {
+    globalThis.fetch = vi.fn((_url, options?: RequestInit) => {
       return new Promise((_resolve, reject) => {
-        options.signal.addEventListener("abort", () => {
-          const abortError = new Error("The operation was aborted.");
-          abortError.name = "AbortError";
-          reject(abortError);
+        options?.signal?.addEventListener("abort", () => {
+          reject(new DOMException("The operation was aborted.", "AbortError"));
         });
       });
-    });
+    }) as typeof fetch;
 
     const recommendationPromise = fetchMoodRecommendation("happy");
     const timeoutAssertion = expect(recommendationPromise).rejects.toThrow(

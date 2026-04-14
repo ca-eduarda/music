@@ -1,7 +1,7 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
+import test from "node:test";
+import assert from "node:assert/strict";
 
-const { getRecommendationByMoodWithSpotify } = require("./spotifyMoodService");
+import { getRecommendationByMoodWithSpotify } from "./spotifyMoodService";
 
 test("returns fallback recommendation when Spotify API fails", async () => {
   const originalFetch = global.fetch;
@@ -13,7 +13,7 @@ test("returns fallback recommendation when Spotify API fails", async () => {
   global.fetch = async () => ({
     ok: false,
     json: async () => ({})
-  });
+  } as Response);
 
   try {
     const response = await getRecommendationByMoodWithSpotify("happy");

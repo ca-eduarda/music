@@ -1,15 +1,19 @@
+import { useState } from "react";
+
+import type { MoodCardProps } from "@/components/app/MoodCard";
 import { AppHeader } from "@/components/app/AppHeader";
 import { MoodCard } from "@/components/app/MoodCard";
 import { fetchMoodRecommendation } from "@/services/moodApi";
-import { useState } from "react";
+import type { Step } from "@/types/app";
+import type { MoodRecommendation } from "@/types/mood";
 
 export default function App() {
   const [mood, setMood] = useState("");
-  const [step, setStep] = useState("input");
+  const [step, setStep] = useState<Step>("input");
   const [error, setError] = useState("");
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<MoodRecommendation | null>(null);
 
-  async function handleSubmit(event) {
+  const handleSubmit: NonNullable<MoodCardProps["onSubmit"]> = async (event) => {
     event.preventDefault();
     const trimmedMood = mood.trim();
 
@@ -26,10 +30,14 @@ export default function App() {
       setData(payload);
       setStep("result");
     } catch (submissionError) {
-      setError(submissionError.message || "Something went wrong.");
+      if (submissionError instanceof Error) {
+        setError(submissionError.message || "Something went wrong.");
+      } else {
+        setError("Something went wrong.");
+      }
       setStep("input");
     }
-  }
+  };
 
   function handleTryAgain() {
     setMood("");

@@ -1,14 +1,35 @@
-function normalizeMood(input) {
+export interface MoodIntent {
+  id: string;
+  keywords: string[];
+  friendlyMessage: string;
+  searchTerms: string[];
+}
+
+export interface PlaylistItem {
+  name: string;
+  url: string;
+  reason: string;
+  thumbnailUrl?: string;
+}
+
+export interface MoodRecommendation {
+  mood: string;
+  friendlyMessage: string;
+  playlists: PlaylistItem[];
+  source: "spotify" | "fallback" | string;
+}
+
+export function normalizeMood(input: string) {
   return String(input || "")
     .trim()
     .toLowerCase();
 }
 
-function buildSpotifySearchUrl(query) {
+export function buildSpotifySearchUrl(query: string) {
   return `https://open.spotify.com/search/${encodeURIComponent(query)}`;
 }
 
-const moodIntents = [
+const moodIntents: MoodIntent[] = [
   {
     id: "happy",
     keywords: ["happy", "excited", "great", "good", "upbeat", "joy"],
@@ -39,7 +60,7 @@ const moodIntents = [
   }
 ];
 
-function detectMoodIntent(moodText) {
+export function detectMoodIntent(moodText: string) {
   const normalizedMood = normalizeMood(moodText);
   return (
     moodIntents.find((intent) =>
@@ -48,7 +69,7 @@ function detectMoodIntent(moodText) {
   );
 }
 
-function getFallbackRecommendation(moodText) {
+export function getFallbackRecommendation(moodText: string): MoodRecommendation {
   const normalizedMood = normalizeMood(moodText);
   const intent = detectMoodIntent(normalizedMood);
   const safeMood = normalizedMood || "any mood";
@@ -71,10 +92,3 @@ function getFallbackRecommendation(moodText) {
     source: "fallback"
   };
 }
-
-module.exports = {
-  normalizeMood,
-  buildSpotifySearchUrl,
-  detectMoodIntent,
-  getFallbackRecommendation
-};

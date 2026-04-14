@@ -5,11 +5,17 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/Card/Card";
 import { Textarea } from "@/components/ui/Textarea/Textarea";
 import { getPlaylistThumb } from "@/lib/appConfig";
+import type { PlaylistItem } from "@/types/mood";
 import { Loader2, Sparkles } from "lucide-react";
+import type { MoodCardProps } from "./MoodCard.type";
+
+function getPlaylistKey(playlist: PlaylistItem, index: number) {
+  return `${playlist.url || playlist.name || "playlist"}-${index}`;
+}
 
 export function MoodCard({
   step,
@@ -18,8 +24,8 @@ export function MoodCard({
   data,
   onMoodChange,
   onSubmit,
-  onTryAgain,
-}) {
+  onTryAgain
+}: MoodCardProps) {
   const playlists = Array.isArray(data?.playlists) ? data.playlists : [];
   const friendlyMessage =
     typeof data?.friendlyMessage === "string"
@@ -67,7 +73,12 @@ export function MoodCard({
             </div>
 
             {error && (
-              <p id="mood-error" className="error" role="alert" aria-live="assertive">
+              <p
+                id="mood-error"
+                className="error"
+                role="alert"
+                aria-live="assertive"
+              >
                 {error}
               </p>
             )}
@@ -115,14 +126,9 @@ export function MoodCard({
             {playlists.length > 0 ? (
               <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {playlists.map((playlist, index) => (
-                  <Card
-                    key={`${playlist.url || playlist.name || "playlist"}-${index}`}
-                    className="overflow-hidden"
-                  >
+                  <Card key={getPlaylistKey(playlist, index)} className="overflow-hidden">
                     <img
-                      src={
-                        playlist.thumbnailUrl || getPlaylistThumb(playlist.name)
-                      }
+                      src={playlist.thumbnailUrl || getPlaylistThumb(playlist.name)}
                       alt={`${playlist.name} thumbnail`}
                       loading="lazy"
                       className="aspect-square w-full object-cover"
@@ -132,12 +138,7 @@ export function MoodCard({
                       <p className="text-xs text-muted-foreground">
                         {playlist.reason}
                       </p>
-                      <Button
-                        asChild
-                        size="sm"
-                        variant="outline"
-                        className="w-full"
-                      >
+                      <Button asChild size="sm" variant="outline" className="w-full">
                         <a href={playlist.url} target="_blank" rel="noreferrer">
                           Open on Spotify
                         </a>
@@ -154,12 +155,7 @@ export function MoodCard({
               </Card>
             )}
 
-            <Button
-              variant="secondary"
-              type="button"
-              onClick={onTryAgain}
-              size="lg"
-            >
+            <Button variant="secondary" type="button" onClick={onTryAgain} size="lg">
               Try another mood
             </Button>
           </section>

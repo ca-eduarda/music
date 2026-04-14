@@ -5,21 +5,26 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App";
 import { fetchMoodRecommendation } from "@/services/moodApi";
+import type { MoodRecommendation } from "@/types/mood";
 
 vi.mock("@/services/moodApi", () => ({
-  fetchMoodRecommendation: vi.fn(),
+  fetchMoodRecommendation: vi.fn()
 }));
 
 function createDeferred() {
-  let resolve;
-  let reject;
+  let resolve: (value: MoodRecommendation) => void;
+  let reject: (reason?: unknown) => void;
 
-  const promise = new Promise((res, rej) => {
+  const promise = new Promise<MoodRecommendation>((res, rej) => {
     resolve = res;
     reject = rej;
   });
 
-  return { promise, resolve, reject };
+  return {
+    promise,
+    resolve: resolve!,
+    reject: reject!
+  };
 }
 
 describe("App mood form flow", () => {
@@ -33,7 +38,7 @@ describe("App mood form flow", () => {
 
   it("goes from input to loading to result", async () => {
     const deferred = createDeferred();
-    fetchMoodRecommendation.mockReturnValueOnce(deferred.promise);
+    vi.mocked(fetchMoodRecommendation).mockReturnValueOnce(deferred.promise);
 
     render(<App />);
     const user = userEvent.setup();
@@ -69,7 +74,7 @@ describe("App mood form flow", () => {
 
   it("goes from input to loading to error", async () => {
     const deferred = createDeferred();
-    fetchMoodRecommendation.mockReturnValueOnce(deferred.promise);
+    vi.mocked(fetchMoodRecommendation).mockReturnValueOnce(deferred.promise);
 
     render(<App />);
     const user = userEvent.setup();
@@ -92,7 +97,7 @@ describe("App mood form flow", () => {
   });
 
   it("shows error when backend returns invalid payload", async () => {
-    fetchMoodRecommendation.mockRejectedValueOnce(
+    vi.mocked(fetchMoodRecommendation).mockRejectedValueOnce(
       new Error("Received an invalid response from backend.")
     );
 

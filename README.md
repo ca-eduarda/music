@@ -6,8 +6,8 @@ An app that reads a user's mood and returns a friendly response with Spotify pla
 
 ```text
 music/
-  back/   -> API (Node + Express)
-  front/  -> Web app (React + Vite + Tailwind)
+  back/   -> API (Node + Express + TypeScript)
+  front/  -> Web app (React + Vite + Tailwind + TypeScript)
 ```
 
 ## Run Locally
@@ -23,6 +23,8 @@ npm run dev
 
 Backend default URL: `http://localhost:3001`
 
+Build output: `back/dist`
+
 ### 2) Frontend
 
 ```bash
@@ -33,6 +35,21 @@ npm run dev
 ```
 
 Frontend default URL: `http://localhost:5173`
+
+## TypeScript Setup
+
+### Backend
+
+- source code: `back/src/**/*.ts`
+- compile command: `npm run build`
+- output folder: `back/dist`
+- run compiled API: `npm run start`
+
+### Frontend
+
+- source code: `front/src/**/*.ts` and `front/src/**/*.tsx`
+- static typecheck: `npm run typecheck`
+- production build: `npm run build`
 
 ## Environment Variables
 
@@ -79,6 +96,30 @@ npm test
 ```bash
 cd front
 npm test
+```
+
+## Code Quality
+
+Run from each package:
+
+### Backend (`back/`)
+
+```bash
+npm run typecheck
+npm run lint
+npm run lint:fix
+npm run format
+npm run format:check
+```
+
+### Frontend (`front/`)
+
+```bash
+npm run typecheck
+npm run lint
+npm run lint:fix
+npm run format
+npm run format:check
 ```
 
 ## Deployment Strategy
