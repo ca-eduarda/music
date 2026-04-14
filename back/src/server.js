@@ -3,8 +3,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const {
-  getRecommendationByMoodWithAI
-} = require("./services/aiMoodService");
+  getRecommendationByMoodWithSpotify
+} = require("./services/spotifyMoodService");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -25,7 +25,7 @@ app.post("/api/mood", async (req, res) => {
     });
   }
 
-  const recommendation = await getRecommendationByMoodWithAI(mood);
+  const recommendation = await getRecommendationByMoodWithSpotify(mood);
   return res.status(200).json(recommendation);
 });
 
