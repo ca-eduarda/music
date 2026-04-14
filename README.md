@@ -1,2 +1,2 @@
-# music-ai
-AI-powered app that understands your mood and returns a friendly message with personalized Spotify playlist recommendations.
+# music
+MoodMusic is a web app that reads how the user feels and returns a friendly message with Spotify playlist suggestions. It uses a Node.js API with simple mood detection and Spotify search to deliver fast, personalized recommendations.
