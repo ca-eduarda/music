@@ -20,6 +20,12 @@ export function MoodCard({
   onSubmit,
   onTryAgain,
 }) {
+  const playlists = Array.isArray(data?.playlists) ? data.playlists : [];
+  const friendlyMessage =
+    typeof data?.friendlyMessage === "string"
+      ? data.friendlyMessage
+      : "We found recommendations, but some details are unavailable.";
+
   return (
     <Card className="overflow-hidden">
       <CardHeader className="border-b bg-muted/30">
@@ -102,40 +108,51 @@ export function MoodCard({
 
             <Card className="border-dashed bg-muted/30">
               <CardContent className="p-5 text-sm text-muted-foreground">
-                {data.friendlyMessage}
+                {friendlyMessage}
               </CardContent>
             </Card>
 
-            <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {(data.playlists || []).map((playlist) => (
-                <Card key={playlist.url} className="overflow-hidden">
-                  <img
-                    src={
-                      playlist.thumbnailUrl || getPlaylistThumb(playlist.name)
-                    }
-                    alt={`${playlist.name} thumbnail`}
-                    loading="lazy"
-                    className="aspect-square w-full object-cover"
-                  />
-                  <CardContent className="space-y-3 p-5">
-                    <h3 className="text-sm font-semibold">{playlist.name}</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {playlist.reason}
-                    </p>
-                    <Button
-                      asChild
-                      size="sm"
-                      variant="outline"
-                      className="w-full"
-                    >
-                      <a href={playlist.url} target="_blank" rel="noreferrer">
-                        Open on Spotify
-                      </a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </section>
+            {playlists.length > 0 ? (
+              <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {playlists.map((playlist, index) => (
+                  <Card
+                    key={`${playlist.url || playlist.name || "playlist"}-${index}`}
+                    className="overflow-hidden"
+                  >
+                    <img
+                      src={
+                        playlist.thumbnailUrl || getPlaylistThumb(playlist.name)
+                      }
+                      alt={`${playlist.name} thumbnail`}
+                      loading="lazy"
+                      className="aspect-square w-full object-cover"
+                    />
+                    <CardContent className="space-y-3 p-5">
+                      <h3 className="text-sm font-semibold">{playlist.name}</h3>
+                      <p className="text-xs text-muted-foreground">
+                        {playlist.reason}
+                      </p>
+                      <Button
+                        asChild
+                        size="sm"
+                        variant="outline"
+                        className="w-full"
+                      >
+                        <a href={playlist.url} target="_blank" rel="noreferrer">
+                          Open on Spotify
+                        </a>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </section>
+            ) : (
+              <Card className="border-dashed bg-muted/30">
+                <CardContent className="p-5 text-sm text-muted-foreground">
+                  No playlists are available right now. Try another mood.
+                </CardContent>
+              </Card>
+            )}
 
             <Button
               variant="secondary"
