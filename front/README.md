@@ -1,8 +1,17 @@
-# Frontend (placeholder)
+# Frontend (React + Vite)
 
-This is where the interface will live, allowing users to type their mood.
+Main flow implemented:
+- screen 1: mood message input
+- loading state while calling backend
+- screen 2: playlist grid with thumbnails
 
-Suggested next step:
-- Create a React/Next.js app in this folder
-- Build a form with a mood input
-- Send a request to `POST http://localhost:3001/api/mood`
+## Run locally
+
+1. Start backend in another terminal:
+   - `cd ../back && npm run dev`
+2. Start frontend:
+   - `npm install`
+   - `npm run dev`
+3. Open the URL shown by Vite (usually `http://localhost:5173`)
+
+The app calls `POST http://localhost:3001/api/mood`.
