@@ -2,7 +2,9 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const { getRecommendationByMood } = require("./services/moodService");
+const {
+  getRecommendationByMoodWithAI
+} = require("./services/aiMoodService");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -14,7 +16,7 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "music-ai-backend" });
 });
 
-app.post("/api/mood", (req, res) => {
+app.post("/api/mood", async (req, res) => {
   const { mood } = req.body || {};
 
   if (!mood || typeof mood !== "string") {
@@ -23,7 +25,7 @@ app.post("/api/mood", (req, res) => {
     });
   }
 
-  const recommendation = getRecommendationByMood(mood);
+  const recommendation = await getRecommendationByMoodWithAI(mood);
   return res.status(200).json(recommendation);
 });
 
