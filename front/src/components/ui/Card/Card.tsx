@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import { classNameFunction } from "@/lib/utils";
 
 import { cardStyles } from "./Card.styles";
 import type {
@@ -10,41 +10,41 @@ import type {
 } from "./Card.type";
 
 const Card = React.forwardRef<HTMLDivElement, CardBaseProps>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn(cardStyles.root, className)} {...props} />
+  <div ref={ref} className={classNameFunction(cardStyles.root, className)} {...props} />
 ));
 Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<HTMLDivElement, CardBaseProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn(cardStyles.header, className)} {...props} />
+    <div ref={ref} className={classNameFunction(cardStyles.header, className)} {...props} />
   )
 );
 CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn(cardStyles.title, className)} {...props} />
+    <h3 ref={ref} className={classNameFunction(cardStyles.title, className)} {...props} />
   )
 );
 CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<HTMLParagraphElement, CardDescriptionProps>(
   ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn(cardStyles.description, className)} {...props} />
+    <p ref={ref} className={classNameFunction(cardStyles.description, className)} {...props} />
   )
 );
 CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<HTMLDivElement, CardBaseProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn(cardStyles.content, className)} {...props} />
+    <div ref={ref} className={classNameFunction(cardStyles.content, className)} {...props} />
   )
 );
 CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<HTMLDivElement, CardBaseProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn(cardStyles.footer, className)} {...props} />
+    <div ref={ref} className={classNameFunction(cardStyles.footer, className)} {...props} />
   )
 );
 CardFooter.displayName = "CardFooter";

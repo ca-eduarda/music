@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok", service: "music-ai-backend" });
+  res.json({ status: "ok", service: "music-backend" });
 });
 
 app.post("/api/mood", async (req, res) => {

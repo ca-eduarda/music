@@ -1,8 +1,8 @@
 export const cardStyles = {
-  root: "rounded-lg border bg-card text-card-foreground shadow-sm",
-  header: "flex flex-col space-y-1.5 p-6",
+  root: "rounded-2xl border bg-card text-card-foreground shadow-sm",
+  header: "flex flex-col space-y-2 p-7",
   title: "text-2xl font-semibold leading-none tracking-tight",
   description: "text-sm text-muted-foreground",
-  content: "p-6 pt-0",
-  footer: "flex items-center p-6 pt-0"
+  content: "p-7",
+  footer: "flex items-center p-7 pt-0",
 } as const;

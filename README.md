@@ -1,11 +1,11 @@
-# music-ai
+# music
 
 An app that understands the user's mood and returns a friendly message with a playlist recommendation.
 
 ## Initial structure
 
 ```text
-music-ai/
+music/
   back/   -> API (Node + Express)
   front/  -> Web interface (placeholder)
 ```
@@ -15,9 +15,9 @@ music-ai/
 The backend lives in `back/` and already includes:
 
 - `POST /api/mood` to receive `{ "mood": "..." }`
-- a response with `friendlyMessage` + dynamic AI playlist ideas
+- a response with `friendlyMessage` + Spotify playlist recommendations
 - `GET /health` for status checks
-- OpenAI integration with fallback to Spotify search suggestions
+- keyword-based mood detection + Spotify Search API integration
 
 ### Running the backend
 
@@ -26,8 +26,9 @@ The backend lives in `back/` and already includes:
 2. Install dependencies:
    - `npm install`
 3. (Optional) copy `.env.example` to `.env`
-   - Add your OpenAI key to enable real AI responses:
-   - `OPENAI_API_KEY=your_openai_api_key_here`
+   - Add your Spotify app credentials:
+   - `SPOTIFY_CLIENT_ID=your_spotify_client_id_here`
+   - `SPOTIFY_CLIENT_SECRET=your_spotify_client_secret_here`
 4. Run:
    - `npm run dev`
 
@@ -38,6 +39,6 @@ Default server URL: `http://localhost:3001`
 `POST /api/mood` returns:
 
 - `mood`: normalized user input
-- `friendlyMessage`: AI-generated (or fallback) message
-- `playlists`: list of playlist ideas with `name`, `url`, and `reason`
-- `source`: `ai` when OpenAI is used, `fallback` otherwise
+- `friendlyMessage`: keyword-based message
+- `playlists`: list of playlists with `name`, `url`, `reason`, and `thumbnailUrl`
+- `source`: `spotify` when Spotify API is used, `fallback` otherwise

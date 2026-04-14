@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 
-import { cn } from "@/lib/utils";
+import { classNameFunction } from "@/lib/utils";
 
 import { buttonVariants } from "./Button.styles";
 import type { ButtonProps } from "./Button.type";
@@ -12,7 +12,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={classNameFunction(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
       />
