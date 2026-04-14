@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const morgan = require("morgan");
 const {
   getRecommendationByMoodWithSpotify
 } = require("./services/spotifyMoodService");
@@ -10,11 +11,15 @@ const {
 function createApp(options = {}) {
   const app = express();
   const DEFAULT_FRONTEND_ORIGIN = "http://localhost:5173";
+  const isProduction = process.env.NODE_ENV === "production";
+  const configuredFrontendOrigin =
+    options.frontendOrigin || process.env.FRONTEND_ORIGIN;
+  if (isProduction && !configuredFrontendOrigin) {
+    throw new Error("FRONTEND_ORIGIN must be set in production.");
+  }
+
   const config = {
-    frontendOrigin:
-      options.frontendOrigin ||
-      process.env.FRONTEND_ORIGIN ||
-      DEFAULT_FRONTEND_ORIGIN,
+    frontendOrigin: configuredFrontendOrigin || DEFAULT_FRONTEND_ORIGIN,
     maxMoodLength: Number(options.maxMoodLength || process.env.MOOD_MAX_LENGTH) || 280,
     rateLimitWindowMs:
       Number(options.rateLimitWindowMs || process.env.MOOD_RATE_LIMIT_WINDOW_MS) ||
@@ -48,6 +53,13 @@ function createApp(options = {}) {
         }
 
         return callback(new Error("Origin not allowed by CORS policy."));
+      }
+    })
+  );
+  app.use(
+    morgan(process.env.LOG_FORMAT || "dev", {
+      skip(req) {
+        return req.path === "/health";
       }
     })
   );
