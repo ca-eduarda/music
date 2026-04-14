@@ -55,18 +55,27 @@ export default function App() {
 
   return (
     <main className="page">
-      <section className="card">
+      <section className="app-shell">
+        <header className="topbar">
+          <div className="brand">
+            <span className="brand-dot" />
+            <span>Music AI</span>
+          </div>
+          <span className="chip">Mood to Playlist</span>
+        </header>
+
         {step === "input" && (
-          <>
-            <header className="header">
-              <p className="badge">Music AI</p>
+          <section className="panel">
+            <header className="hero">
+              <p className="badge">Start Here</p>
               <h1>How are you feeling today?</h1>
               <p className="subtitle">
-                Share your mood and get AI-powered playlist suggestions.
+                Describe your mood in your own words and we will find matching
+                playlists on Spotify.
               </p>
             </header>
 
-            <form className="form" onSubmit={handleSubmit}>
+            <form className="form panel-card" onSubmit={handleSubmit}>
               <label htmlFor="mood">Your message</label>
               <textarea
                 id="mood"
@@ -80,35 +89,33 @@ export default function App() {
 
               <button type="submit">Generate playlists</button>
             </form>
-          </>
+          </section>
         )}
 
         {step === "loading" && (
-          <section className="center-state">
+          <section className="center-state panel">
             <p className="badge">Loading</p>
             <h2>Preparing your music vibe...</h2>
-            <p>Analyzing your mood and creating playlist ideas.</p>
+            <p>Matching your mood keywords and searching Spotify.</p>
             <div className="spinner" />
           </section>
         )}
 
         {step === "result" && data && (
-          <>
+          <section className="panel">
             <header className="result-header">
-              <div>
-                <p className="badge">Recommendations</p>
-                <h2>Your playlist grid is ready</h2>
-              </div>
+              <p className="badge">Recommendations</p>
+              <h2>Your playlist grid is ready</h2>
               <span className="source">{data.source || "unknown"}</span>
             </header>
 
-            <p className="friendly">{data.friendlyMessage}</p>
+            <p className="friendly panel-card">{data.friendlyMessage}</p>
 
             <section className="playlist-grid">
               {(data.playlists || []).map((playlist) => (
                 <article className="playlist-card" key={playlist.url}>
                   <img
-                    src={getPlaylistThumb(playlist.name)}
+                    src={playlist.thumbnailUrl || getPlaylistThumb(playlist.name)}
                     alt={`${playlist.name} thumbnail`}
                     loading="lazy"
                   />
@@ -126,7 +133,7 @@ export default function App() {
             <button className="secondary" type="button" onClick={handleTryAgain}>
               Try another mood
             </button>
-          </>
+          </section>
         )}
       </section>
     </main>
